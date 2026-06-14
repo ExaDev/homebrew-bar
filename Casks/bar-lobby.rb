@@ -2,8 +2,8 @@ cask "bar-lobby" do
   # TODO: populate version + sha256 from the first ExaDev/bar-lobby DMG release.
   # `brew bump-cask-pr` (or the livecheck below) resolves the current version;
   # until a release exists this cask is a scaffold and will not install.
-  version "0.15.3-macos.4"
-  sha256 "d21a57cc9dfe3522e9ae9d186bae4a0c0dd4b3bbdf65a7ff3fd0ba797f950369"
+  version "0.15.3-dev.5"
+  sha256 "50f3cde1693a3c57f5a1fd748a1750232710d873faba0a0a9c0cb830405696e2"
 
   url "https://github.com/ExaDev/bar-lobby/releases/download/v#{version}/BeyondAllReason-#{version}-mac-arm64.dmg",
       verified: "github.com/ExaDev/bar-lobby/"
