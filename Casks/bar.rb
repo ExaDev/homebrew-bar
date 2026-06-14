@@ -1,8 +1,8 @@
 cask "bar" do
   # version + sha256 are bumped automatically by ExaDev/bar-lobby's update-cask
   # job (deploy-key push) on each release; it rewrites only these two lines.
-  version "0.15.3-dev.14"
-  sha256 "0b18b06a67456d152fe545756c1fbd6a5c06ef867801df02f611f4ef92394712"
+  version "0.15.3-dev.15"
+  sha256 "3eb56367f4735366d4988524ab03387672ad784c8353e28ae7d4f668c5bed9fa"
 
   url "https://github.com/ExaDev/bar-lobby/releases/download/v#{version}/BeyondAllReason-#{version}-mac-arm64.dmg",
       verified: "github.com/ExaDev/bar-lobby/"
