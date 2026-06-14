@@ -1,4 +1,4 @@
-cask "bar-lobby" do
+cask "bar" do
   # version + sha256 are bumped automatically by ExaDev/bar-lobby's update-cask
   # job (deploy-key push) on each release; it rewrites only these two lines.
   version "0.15.3-dev.13"
@@ -21,12 +21,15 @@ cask "bar-lobby" do
   depends_on arch: :arm64
   depends_on macos: :sonoma
 
-  app "BeyondAllReason.app"
+  # The build produces BeyondAllReason.app; install it under the friendly,
+  # spaced name. Renaming the bundle is safe — the app resolves its bundled
+  # engine relative to its own path, not by bundle name.
+  app "BeyondAllReason.app", target: "Beyond All Reason.app"
 
   # NOTE: the app is currently ad-hoc signed (not Developer ID / notarised), so
   # Gatekeeper will quarantine it on first launch. Until it is notarised, after
   # install the user must clear quarantine, e.g.:
-  #   xattr -dr com.apple.quarantine "/Applications/BeyondAllReason.app"
+  #   xattr -dr com.apple.quarantine "/Applications/Beyond All Reason.app"
 
   zap trash: [
     "~/Library/Application Support/BeyondAllReason",
