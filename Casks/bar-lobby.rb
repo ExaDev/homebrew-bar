@@ -1,7 +1,6 @@
 cask "bar-lobby" do
-  # TODO: populate version + sha256 from the first ExaDev/bar-lobby DMG release.
-  # `brew bump-cask-pr` (or the livecheck below) resolves the current version;
-  # until a release exists this cask is a scaffold and will not install.
+  # version + sha256 are bumped automatically by ExaDev/bar-lobby's update-cask
+  # job (deploy-key push) on each release; it rewrites only these two lines.
   version "0.15.3-dev.12"
   sha256 "af8e472607e429c01783693c4f693db63b2b43a2ef5b87da0fcf1860cd309c5f"
 
@@ -20,7 +19,7 @@ cask "bar-lobby" do
   # -> Metal, which needs macOS 26 (Tahoe); on older macOS the GPU path is
   # unavailable. The floor below is conservative — see the homepage.
   depends_on arch: :arm64
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "BeyondAllReason.app"
 
