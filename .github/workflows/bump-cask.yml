@@ -30,10 +30,14 @@ jobs:
 
           # Latest non-draft bar-lobby release tagged v* (the app DMG release).
           # Both repos are public, so the default token can read it (no PAT).
+          # Sort by publishedAt, not createdAt: electron-builder sets every
+          # release's created_at to the tag's commit date (identical across our
+          # auto-releases), so createdAt can't order them. publishedAt is the
+          # actual publish time and differs per release.
           TAG=$(gh release list --repo ExaDev/bar-lobby --limit 30 \
-            --json tagName,isDraft,createdAt \
+            --json tagName,isDraft,publishedAt \
             --jq '[.[] | select(.isDraft | not) | select(.tagName | startswith("v"))]
-                  | sort_by(.createdAt) | reverse | .[0].tagName' 2>/dev/null || true)
+                  | sort_by(.publishedAt) | reverse | .[0].tagName' 2>/dev/null || true)
           if [ -z "${TAG:-}" ] || [ "$TAG" = "null" ]; then
             echo "No bar-lobby v* release yet; nothing to bump."
             exit 0
