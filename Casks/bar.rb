@@ -1,37 +1,42 @@
 cask "bar" do
-  # version + sha256 are bumped automatically by ExaDev/bar-lobby's update-cask
-  # job (deploy-key push) on each release; it rewrites only these two lines.
-  version "0.15.3-dev.17"
-  sha256 "8ee78de21f8bc0e4ac4bced781a6ebf227b5a9f84bc8e25ccf0c653f46c586eb"
+  # version + sha256 track the combined macOS bundle and are bumped automatically
+  # by ExaDev/BYAR-Chobby's chobby-macos.yml (deploy-key push); it rewrites only
+  # these two lines.
+  version "0.0.0"
+  sha256 :no_check
 
-  url "https://github.com/ExaDev/bar-lobby/releases/download/v#{version}/BeyondAllReason-#{version}-mac-arm64.dmg",
-      verified: "github.com/ExaDev/bar-lobby/"
+  # One combined DMG carrying both thin clients. Both are launchers that download
+  # the shared engine from ExaDev/RecoilEngine at runtime, so the bundle is small
+  # and the engine is never duplicated.
+  url "https://github.com/ExaDev/BYAR-Chobby/releases/download/v#{version}/BeyondAllReason-bundle-#{version}-mac-arm64.dmg",
+      verified: "github.com/ExaDev/BYAR-Chobby/"
   name "Beyond All Reason"
-  desc "Beyond All Reason lobby client (bar-lobby), Apple Silicon build"
-  homepage "https://github.com/ExaDev/bar-lobby"
+  desc "Beyond All Reason: bar-lobby (next-gen) and Chobby (production) clients"
+  homepage "https://www.beyondallreason.info/"
 
   livecheck do
-    url "https://github.com/ExaDev/bar-lobby/releases"
+    url "https://github.com/ExaDev/BYAR-Chobby/releases"
     strategy :github_latest
   end
 
-  # Apple Silicon only. The bundled engine renders via Mesa Zink -> KosmicKrisp
-  # -> Metal, which needs macOS 26 (Tahoe); on older macOS the GPU path is
-  # unavailable. The floor below is conservative — see the homepage.
+  # Apple Silicon only. The shared engine renders via Mesa Zink -> KosmicKrisp
+  # -> Metal, which needs macOS 26 (Tahoe); the floor below is conservative.
   depends_on arch: :arm64
   depends_on macos: :sonoma
 
-  # The build produces BeyondAllReason.app; install it under the friendly,
-  # spaced name. Renaming the bundle is safe — the app resolves its bundled
-  # engine relative to its own path, not by bundle name.
+  # Two apps from the one bundle. bar-lobby ships as "BeyondAllReason.app"
+  # (installed under the spaced name); Chobby ships already-named.
   app "BeyondAllReason.app", target: "Beyond All Reason.app"
+  app "Beyond All Reason (Chobby).app"
 
-  # NOTE: the app is currently ad-hoc signed (not Developer ID / notarised), so
-  # Gatekeeper will quarantine it on first launch. Until it is notarised, after
-  # install the user must clear quarantine, e.g.:
-  #   xattr -dr com.apple.quarantine "/Applications/Beyond All Reason.app"
+  # NOTE: both apps are ad-hoc signed (not Developer ID / notarised), so
+  # Gatekeeper quarantines them on first launch. After install, clear quarantine
+  # once:
+  #   xattr -dr com.apple.quarantine "/Applications/Beyond All Reason.app" \
+  #     "/Applications/Beyond All Reason (Chobby).app"
 
   zap trash: [
+    "~/Library/Application Support/Beyond All Reason",
     "~/Library/Application Support/BeyondAllReason",
   ]
 end
