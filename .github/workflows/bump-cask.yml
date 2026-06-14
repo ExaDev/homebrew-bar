@@ -1,0 +1,72 @@
+name: Bump bar-lobby cask
+
+# Keeps Casks/bar-lobby.rb pointed at the latest ExaDev/bar-lobby release.
+# - repository_dispatch: fired by bar-lobby's release.yml for instant bumps
+#   (needs HOMEBREW_TAP_TOKEN on bar-lobby; optional).
+# - schedule: token-free fallback poll so the cask self-maintains even without
+#   the dispatch token.
+# - workflow_dispatch: manual.
+on:
+  repository_dispatch:
+    types: [bar-lobby-release]
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump cask to latest bar-lobby release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # Latest non-draft bar-lobby release tagged v* (the app DMG release).
+          # Both repos are public, so the default token can read it (no PAT).
+          TAG=$(gh release list --repo ExaDev/bar-lobby --limit 30 \
+            --json tagName,isDraft,createdAt \
+            --jq '[.[] | select(.isDraft | not) | select(.tagName | startswith("v"))]
+                  | sort_by(.createdAt) | reverse | .[0].tagName' 2>/dev/null || true)
+          if [ -z "${TAG:-}" ] || [ "$TAG" = "null" ]; then
+            echo "No bar-lobby v* release yet; nothing to bump."
+            exit 0
+          fi
+
+          VERSION="${TAG#v}"
+          ASSET="BeyondAllReason-${VERSION}-mac-arm64.dmg"
+          URL="https://github.com/ExaDev/bar-lobby/releases/download/${TAG}/${ASSET}"
+
+          # Confirm the macOS DMG asset is actually present on the release.
+          if ! gh release view "$TAG" --repo ExaDev/bar-lobby --json assets \
+                 --jq '.assets[].name' | grep -qx "$ASSET"; then
+            echo "::warning::asset $ASSET not found on $TAG; skipping bump"
+            exit 0
+          fi
+
+          echo "Latest bar-lobby release: $TAG (version $VERSION)"
+          curl -fsSL "$URL" -o /tmp/bar-lobby.dmg
+          SHA=$(shasum -a 256 /tmp/bar-lobby.dmg | cut -d' ' -f1)
+          echo "sha256=$SHA"
+
+          # Rewrite version + sha256 in the cask (the url is templated on version).
+          sed -i -E "s/^  version \".*\"/  version \"${VERSION}\"/" Casks/bar-lobby.rb
+          sed -i -E "s/^  sha256 .*/  sha256 \"${SHA}\"/" Casks/bar-lobby.rb
+
+          if git diff --quiet Casks/bar-lobby.rb; then
+            echo "Cask already at ${VERSION}; no change."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/bar-lobby.rb
+          git commit -m "bar-lobby ${VERSION}"
+          git push
+          echo "Bumped bar-lobby cask to ${VERSION}"
