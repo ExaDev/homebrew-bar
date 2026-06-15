@@ -29,11 +29,18 @@ cask "bar" do
   app "BeyondAllReason.app", target: "Beyond All Reason.app"
   app "Beyond All Reason (Chobby).app"
 
-  # NOTE: both apps are ad-hoc signed (not Developer ID / notarised), so
-  # Gatekeeper quarantines them on first launch. After install, clear quarantine
-  # once:
-  #   xattr -dr com.apple.quarantine "/Applications/Beyond All Reason.app" \
-  #     "/Applications/Beyond All Reason (Chobby).app"
+  # Both apps are ad-hoc signed (not Developer ID / notarised). Homebrew leaves
+  # the com.apple.quarantine attribute on the installed bundles, which Gatekeeper
+  # misreports as "damaged and can't be opened" for an ad-hoc signature. The
+  # signature itself is valid, so stripping the quarantine attribute on install
+  # lets both apps launch directly. (The update-cask CI job only rewrites the
+  # version and sha256 lines, so this block persists across automated bumps.)
+  postflight do
+    ["Beyond All Reason.app", "Beyond All Reason (Chobby).app"].each do |bundle|
+      system_command "/usr/bin/xattr",
+                     args: ["-dr", "com.apple.quarantine", "#{appdir}/#{bundle}"]
+    end
+  end
 
   zap trash: [
     "~/Library/Application Support/Beyond All Reason",
