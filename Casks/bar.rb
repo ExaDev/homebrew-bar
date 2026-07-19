@@ -3,7 +3,7 @@ cask "bar" do
   # by ExaDev/BYAR-Chobby's chobby-macos.yml (deploy-key push); it rewrites only
   # these two lines.
   version "1.4647.0"
-  sha256 "90d721e41a6ad9e41c44c957e4462e57e33383ef7809fc172ef38e6f35b9d12c"
+  sha256 "38f9e9e2d5f456cfd67ad9b49db7f8e147472936d89bdadd6b9ea4c9875d6a95"
 
   # One combined DMG carrying both thin clients. Both are launchers that download
   # the shared engine from ExaDev/RecoilEngine at runtime, so the bundle is small
