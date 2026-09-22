@@ -2,8 +2,8 @@ cask "bar" do
   # version + sha256 track the combined macOS bundle and are bumped automatically
   # by ExaDev/BYAR-Chobby's chobby-macos.yml (deploy-key push); it rewrites only
   # these two lines.
-  version "1.4690.0"
-  sha256 "477ea54b0d424522156de9138f8eeda94213bcca0d3b90d5b8b6b298e991c39e"
+  version "1.4692.0"
+  sha256 "2090a58fce283ec8b286551d997fc752c81db5953173fc4c9f604d68abf75f42"
 
   # One combined DMG carrying both thin clients. Both are launchers that download
   # the shared engine from ExaDev/RecoilEngine at runtime, so the bundle is small
