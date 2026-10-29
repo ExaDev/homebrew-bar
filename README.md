@@ -1,5 +1,7 @@
 # homebrew-bar
 
+[![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white)](https://github.com/ExaDev/homebrew-bar)
+
 Homebrew tap for [Beyond All Reason](https://www.beyondallreason.info/) on macOS
 (Apple Silicon), distributing the [bar-lobby](https://github.com/ExaDev/bar-lobby)
 client with its bundled patched engine.
